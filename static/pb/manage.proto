@@ -1,0 +1,424 @@
+syntax = "proto3";
+package manage;
+
+
+//登录平台
+message LoginReq
+{
+	string UserName = 1;
+	string PassWord = 2;
+}
+
+message LoginResp
+{
+	int32  Result = 1;
+	string ErrMsg = 2;
+	int32  Type = 3;  //账户类型：1.超级管理员，2.销售员，3.专家，4.省级教育局，5.市级教育局，6县级教育局,7. 学校管理员
+	int32  ProvinceId = 4; //绑定省份，销售员和专家为1；其他按照省份编号填写；省级管理员，city填写1
+	int32  CityId = 5; // 绑定城市，销售员和专家为1; 市级管理员，area填写1；
+	int32  AreaId = 6; // 绑定区域，销售员和专家为1；
+	int32  UnitId = 7; // 学校id，非学校管理员为1；
+	int32  Status = 8; // 账号状态，1为使用中，2为禁用；
+}
+
+//概况统计
+message GeneralStatisticsReq
+{
+	string UserName = 1; //根据用户权限统计信息
+}
+
+message GeneralStatisticsResp
+{
+	int32 RegisterNum = 1;  //注册人数
+	int32 PayedNum = 2;  //付费人数
+	int32 PassNum = 3;  //通过考核人数
+	float AverageScore = 4; //课程平均分
+}
+
+//单位列表
+message UnitListReq
+{
+	int32 Identity = 1;  //账户身份：1.超级管理员，2.销售员，3.专家，4.省级教育局，5.市级教育局，6县级教育局,7. 学校管理员
+	int32 Type = 2; // 地区id类型：1.全国  2.省份  3.城市 4. 地区 5. 学校；
+	int32 SearchId =3; // 省市区编号或学校id，type为全国时，可以传任意值；
+	string UserName = 4; // 用户名，用于检查用户权限；
+}
+
+message Unit
+{
+	int32 UnitId = 1;
+	string UnitName = 2;  //单位名称
+	int32 RegisterNum = 3;  //注册人数
+	int32 PayedNum = 4;  //付费人数
+	int32 PassNum = 5;  //通过考核人数
+	string Administrator = 6;  //管理员
+	string AdministratorPhone = 7; //管理员电话号码
+	string Address = 8;  //地址
+}
+
+message UnitListResp
+{
+	int32 Result = 1;
+	string ErrMsg = 2;
+	repeated Unit UnitList = 3;
+}
+
+// 删除单位
+message UnitDeleteReq
+{
+	string UnitArr = 1; // 单位id数组转化的string，使用逗号隔开；
+	string UserName = 2; // 操作者用户名
+	string PassWord = 3; // 操作者密码, 验证用户名和密码后方可删除单位
+}
+
+message UnitDeleteResp
+{
+	int32 Result = 1;
+	string ErrMsg = 2;
+}
+
+// 新建单位
+message UnitAddReq
+{
+	string UnitName = 1; // 单位名称
+	string UserName = 2; // 操作者用户名
+	int32 ProvinceId = 3; // 单位省份id
+	int32 CityId = 4; // 单位城市id
+	int32 AreaId = 5; // 单位地区id
+	string Administrator = 6; // 管理员姓名
+	string AdministratorPhone = 7; // 管理员电话
+}
+
+message UnitAddResp
+{
+	int32 Result = 1;
+	string ErrMsg = 2;
+}
+
+// 新建个人用户
+message TeacherAddReq
+{
+	string TeacherList = 1; // 教师信息，使用“15098985191/李文道,15098985191/李朝阳”的字符串进行拼接，可以一次传递多个教师。
+	int32 UnitId = 2; // 单位省份id
+	string UserName = 3; // 操作者用户名
+}
+
+message TeacherAddResp
+{
+	int32 Result = 1;
+	string ErrMsg = 2;
+}
+
+// 删除个人用户
+message TeacherDeleteReq
+{
+	string TeacherPhoneList = 1; // 教师信息，使用“15098985191,15098987191”的字符串进行拼接,可一次删除多个教师
+	string UserName = 2; // 操作者用户名
+}
+
+message TeacherDeleteResp
+{
+	int32 Result = 1;
+	string ErrMsg = 2;
+}
+
+// 获取个人用户列表
+message TeacherListReq
+{
+	int32 UnitId = 1 ; // 所要查询的单位id
+	string UserName = 2; // 查询者用户名
+}
+
+message Lesson
+{
+	int32 LessonId = 1;  //课时索引
+	string LessonName = 2;  //课时名称
+	string Description = 3;  //课时简介
+}
+
+message Course
+{
+	int32 CourseId = 1;  //课程id
+	string CourseName = 2; //课程名称
+	int32  Score = 3; // 课程得分
+	int32  LessonCount = 4; //课时数量
+	int32  FinishedLesson = 5; // 课时完成数量
+	string Professor = 6;  //授课教授
+	string HeadPortrait = 7;  //头像url
+	repeated Lesson LessonList = 8;  //课时列表
+}
+
+message Teacher 
+{
+	string TeacherName = 1; // 教师姓名
+	string TeacherPhone = 2; // 教师电话
+	string UnitName = 3; // 所在单位名称
+	int32  UnitId = 4; // 所在单位id
+	int32  AreaId = 5; // 所在单位地区id
+	repeated Course CourseList = 6; // 课程概况
+}
+
+message TeacherListResp
+{
+	int32 Result = 1;
+	string ErrMsg = 2;
+	repeated Teacher TeacherList = 3; // 教师列表
+}
+
+//课程查询
+message CourseQueryReq
+{
+}
+
+message CourseQueryResp
+{
+	int32 Result = 1;
+	string ErrMsg = 2;
+	repeated Course CourseList = 3;  //所有课程
+}
+
+//开通课程
+message AuthenCourseReq
+{
+	repeated Teacher TeacherList = 1; // 教师列表,只填TeacherPhone
+	repeated Course CourseList = 2; // 课程概况,只填CourseId(前期默认全部开通)
+	string UserName = 3; // 操作者用户名
+}
+
+message AuthenCourseResp
+{
+	int32 Result = 1;
+	string ErrMsg = 2;
+}
+
+//获取阿里 OSS token
+message SecurityTokenReq
+{
+}
+
+message SecurityTokenResp
+{
+	int32 Result=1;
+	string ErrMsg=2;
+	string SecurityToken=3;
+	string Expiration=4;
+	string AccessKeySecret=5;
+	string AccessKeyId=6;
+}
+
+//文件上传导入数据
+message FileUploadReq
+{
+	int32 Type = 1;   // 1.单位  2.用户
+	string FileName = 2;
+	int32 Size = 3; 
+	string Md5sum = 4;  //文件md5值
+	string BucketName = 5;  //容器名
+}
+
+message FileUploadResp
+{
+	int32 Result = 1; 
+	string ErrMsg = 2;
+}
+
+//数据查询做成excel文件下载
+message FileDownloadReq
+{
+	string Bureau = 1;  //教育局
+	string School = 2;  //学校
+}
+
+message FileDownloadResp
+{
+	int32 Result = 1; 
+	string ErrMsg = 2;
+	string FileName = 3;
+	int32 Size = 4; 
+	string Md5sum = 5;  //文件md5值
+	string BucketName = 6;  //容器名
+}
+
+// 生成账号
+message AccountGenerateReq
+{
+	string UserName = 1;  //登录名，例如“luohe_admin”，同UserName
+	string PassWord = 2; // 账户密码
+	int32  Type = 3;  //账户类型：1.超级管理员，2.销售员，3.专家，4.省级教育局，5.市级教育局，6县级教育局,7. 学校管理员
+	string Phone = 4; // 账户绑定手机号
+	int32  ProvinceId = 5; //绑定省份，销售员和专家为1；其他按照省份编号填写；省级管理员，city填写1
+	int32  CityId = 6; // 绑定城市，销售员和专家为1; 市级管理员，area填写1
+	int32  AreaId = 7; // 绑定区域，销售员和专家为1；
+	int32  UnitId = 8; // 绑定单位，没有学校则为1；
+	int32  Status = 9; // 账号状态，1为使用中，2为禁用
+}
+
+message AccountGenerateResp
+{
+	int32 Result = 1; 
+	string ErrMsg = 2;
+}
+
+// 查询生成的账号列表
+message AccountListReq
+{
+}
+
+message Account
+{
+    string UserName = 1;  //登录名
+	int32 Type = 2;  //账户类型：1.超级管理员，2.销售员，3.专家，4.教育局管理者；5. 学校管理员
+	string Phone = 3; // 账户绑定手机号
+	int32  ProvinceId = 4; //绑定省份，销售员和专家为1；其他按照省份编号填写；省级管理员，city填写1；
+	int32  CityId = 5; // 绑定城市，销售员和专家为1; 市级管理员，area填写1；
+	int32  AreaId = 6; // 绑定区域，销售员和专家为1;
+	int32  UnitId = 7; // 单位id，如果没有id则为1;
+	int32  Status = 8; // 账号状态
+}
+
+message AccountListResp
+{
+	int32 Result = 1; 
+	string ErrMsg = 2;
+	repeated Account AccountList = 3;
+}
+
+// 禁用账号、开启账号
+message AccountStatusReq
+{
+    string UserName = 1; //账户名
+    int32 Status = 2; //账号变更后的状态
+}
+
+message AccountStatusResp
+{
+	int32 Result = 1; 
+	string ErrMsg = 2;
+}
+
+// 获取展示页列表
+message EduPageListReq
+{
+    string UserName = 1;
+}
+
+message EduPage
+{
+    int32 ProvinceId = 1;
+    int32 CityId = 2;
+    string PageRouter = 3; //展示页路由地址/城市英文名,例如“luohe”
+    int32 ArticleCount = 4; //引导页文章数量
+    int32 TemplateId = 5; //模板id
+}
+
+message EduPageListResp
+{
+	int32 Result = 1; 
+	string ErrMsg = 2;
+	repeated EduPage EduPageList = 3;  
+}
+
+// 新建展示页
+message AddEduPageReq
+{
+    string UserName = 1; 
+    int32 ProvinceId = 2; // 省份id
+    int32 CityId = 3; // 城市id
+    int32 TemplateId = 4; // 模板id
+    string PageRouter = 5; // 页面英文地址
+}
+
+message AddEduPageResp
+{
+	int32 Result = 1; 
+	string ErrMsg = 2;
+}
+
+// 教育局展示页文章列表
+message ArticleListReq
+{
+    int32 ProvinceId = 1; // 省份id
+    int32 CityId = 2; // 城市id
+}
+
+message Article
+{
+    string Title = 1; //文章标题
+    string SubTitle = 2; // 文章副标题
+    string Context = 3; //文章正文
+    string ImgUrl = 4; //文章图片地址
+    int32 ArticleId = 5; // 文章id
+}
+
+message ArticleListResp
+{
+	int32 Result = 1; 
+	string ErrMsg = 2;
+	repeated Article ArticleList = 3; // 文章列表
+}
+
+// 新建文章
+message ArticleAddReq
+{
+    string Title = 1; //文章标题
+    string SubTitle = 2; // 文章副标题
+    string Context = 3; //文章正文
+    string ImgUrl = 4; //文章图片地址
+    int32  ProvinceId = 5;
+    int32  CityId = 6;
+}
+
+message ArticleAddResp
+{
+	int32 Result = 1; 
+	string ErrMsg = 2;
+}
+
+// 删除文章
+message ArticleDeleteReq
+{
+    int32 ArticleId = 1; // 文章id
+}
+
+message ArticleDeleteResp
+{
+	int32 Result = 1;
+	string ErrMsg = 2;
+}
+
+// 留言查询
+message LessonMessageQueryReq
+{
+	int32 CourseId = 1;
+	int32 LessonId = 2;
+}
+
+message LessonMessage
+{
+	int32 MessageIndex = 1;  //唯一索引值
+	string Message = 2;  //留言消息
+	int32 LeaveTime = 3; //留言时间戳
+	int32 Action = 4;  // 1:开启  0:关闭
+	string UserName = 5; //留言用户
+	string Phone = 6;
+}
+
+message LessonMessageQueryResp
+{
+	int32 Result = 1;
+	string ErrMsg = 2;
+	repeated LessonMessage MessageList = 3;  //留言列表
+}
+
+//留言打开公开显示权限
+message AuthMessageShowReq
+{
+	int32 MessageIndex = 1;
+	int32 Action = 2;  // 1:开启  0:关闭
+}
+
+message AuthMessageShowResp
+{
+	int32 Result = 1;
+	string ErrMsg = 2;
+}
